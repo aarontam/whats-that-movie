@@ -21,44 +21,43 @@ rp(optionsMovie)
 			json: true
 		};
 
-		rp(optionsOmdb)
-			.then(function (movie) {
-				var imdbId = movie.imdbID,
-					data = {};
+		return rp(optionsOmdb);
+	})
+	.then(function (movie) {
+		var imdbId = movie.imdbID,
+			data = {};
 
-				if (imdbId) {
-					data.title = movie.Title;
-					data.year = movie.Year;
-					data.runtime = movie.Runtime;
-					data.director = movie.Director;
-					data.actors = movie.Actors;
-					data.plot = movie.Plot;
-					data.rating = movie.imdbRating;
-					data.posterUrl = movie.Poster;
-					data.id = imdbId;
+		if (imdbId) {
+			data.title = movie.Title;
+			data.year = movie.Year;
+			data.runtime = movie.Runtime;
+			data.director = movie.Director;
+			data.actors = movie.Actors;
+			data.plot = movie.Plot;
+			data.rating = movie.imdbRating;
+			data.posterUrl = movie.Poster;
+			data.id = imdbId;
 
-					return data;
-				}
-			})
-			.then(function (data) {
-				var optionsTA = {
-					uri: 'http://api.traileraddict.com/?imdb=' + data.id.substring(2) + '&width=1080',
-					transform: function (json) {
-						return xmlParser(json);
-					},
-					json: true
-				};
+			return data;
+		}
+	})
+	.then(function (data) {
+		var optionsTA = {
+			uri: 'http://api.traileraddict.com/?imdb=' + data.id.substring(2) + '&width=1080',
+			transform: function (json) {
+				return xmlParser(json);
+			},
+			json: true
+		};
 
-				rp(optionsTA)
-					.then(function (trailerData) {
-						data.trailerUrl = 'v.traileraddict.com/' + trailerData.trailers.trailer.trailer_id;
-						return data;
-					})
-					.catch(function (err) {
-						console.log(err);
-					});
+		rp(optionsTA)
+			.then(function (trailerData) {
+				data.trailerUrl = 'v.traileraddict.com/' + trailerData.trailers.trailer.trailer_id;
+				// do something with the data!
+				return data;
 			})
 			.catch(function (err) {
+				// maybe do something with the existing data, regardless - could use finally via ES6
 				console.log(err);
 			});
 	})
